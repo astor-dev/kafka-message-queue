@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MyProducer {
+public class MySecondProducer {
 
-    private final KafkaTemplate<String, MyMessage> kafkaTemplate;
+    private final KafkaTemplate<String, String> secondKafkaTemplate;
 
-    public void sendMessage(MyMessage myMessage) {
-        kafkaTemplate.send(Topic.MY_JSON_TOPIC, String.valueOf(myMessage.getAge()), myMessage);
+    public void sendMessage(String key, String myMessage) {
+        secondKafkaTemplate.send(Topic.MY_SECOND_TOPIC, key, myMessage);
     }
 }

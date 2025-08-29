@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class MyConsumer {
+public class MySecondConsumer {
 
     @KafkaListener(
-            topics = {Topic.MY_JSON_TOPIC},
-            groupId = "test-consumer-group"
+            topics = {Topic.MY_SECOND_TOPIC},
+            groupId = "test-consumer-group",
+            containerFactory = "secondKafkaListenerContainerFactory"
     )
-    public void accept(ConsumerRecord<String, MyMessage> message) {
-        System.out.println("Message arrived! - " + message.value());
+    public void accept(ConsumerRecord<String, String> message) {
+        System.out.println("second message arrived! - " + message.value());
     }
 }
