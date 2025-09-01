@@ -3,6 +3,7 @@ package com.fastcampus.kafkahandson.api;
 import com.fastcampus.kafkahandson.model.MyMessage;
 import com.fastcampus.kafkahandson.producer.MyProducer;
 import com.fastcampus.kafkahandson.producer.MySecondProducer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,11 @@ public class MyController {
     void message(
         @RequestBody MyMessage message
     ) {
-        myProducer.sendMessage(message);
+        try {
+            myProducer.sendMessage(message);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
