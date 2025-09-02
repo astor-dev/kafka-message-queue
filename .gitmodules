@@ -1,0 +1,4 @@
+[submodule "spring-kafka"]
+	path = spring-kafka
+	url = git@github.com:astor-dev/kafka-message-queue.git
+	branch = spring-kafka
