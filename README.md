@@ -2,8 +2,8 @@ Fast Campus [한번에 끝내는 Kafka Ecosystem](https://fastcampus.co.kr/dev_o
 
 # Part 2-1. 백엔드 개발자의 메시징큐
 
-![stack](md_resource/stack.png)
-![pubsub](md_resource/pubsub.png)
+![stack](https://github.com/HyunSangHan/fastcampus-kafka-message-queue/blob/release/md_resource/stack.png?raw=true)
+![pubsub](https://github.com/HyunSangHan/fastcampus-kafka-message-queue/blob/release/md_resource/pubsub.png?raw=true)
 
 **Kafka라는 Messaging Queue 플랫폼을 주제로, 백엔드 개발자가 실무에서 Kafka를 사용하기 위해 Producer/Consumer 차원의 기본적인 활용 방법, 이슈 대응 방법 등을 학습하기 위한 프로젝트입니다.**
 
@@ -74,7 +74,7 @@ Kafka, Spring Boot, Java 17, Spring Data JPA, Mysql, Gradle, Docker, Docker Comp
 
 ### 이해를 돕기 위한 그림
 
-![cdc](md_resource/cdc.png)
+![cdc](https://github.com/HyunSangHan/fastcampus-kafka-message-queue/blob/release/md_resource/cdc.png?raw=true)
 
 ---
 
@@ -95,7 +95,7 @@ Kafka, Spring Boot, Java 17, Gradle, Docker, Docker Compose
 
 ### 이해를 돕기 위한 그림
 
-![exception](md_resource/exception.png)
+![exception](https://github.com/HyunSangHan/fastcampus-kafka-message-queue/blob/release/md_resource/exception.png?raw=true)
 
 ---
 
