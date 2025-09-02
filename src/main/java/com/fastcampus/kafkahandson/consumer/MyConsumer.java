@@ -20,7 +20,8 @@ public class MyConsumer {
     private final ObjectMapper objectMapper = new ObjectMapper();
     @KafkaListener(
             topics = {Topic.MY_JSON_TOPIC},
-            groupId = "test-consumer-group"
+            groupId = "test-consumer-group",
+            concurrency = "3"
     )
     public void accept(ConsumerRecord<String, String> message, Acknowledgment acknowledgment) throws JsonProcessingException {
         MyMessage myMessage = objectMapper.readValue(message.value(), MyMessage.class);
@@ -30,9 +31,9 @@ public class MyConsumer {
 
     private void printPayloadIfFirstMessage(MyMessage myMessage) {
         if (idHistoryMap.putIfAbsent(String.valueOf(myMessage.getId()), 1) == null) {
-            System.out.println("Exactly Once 실행되어야 하는 로직");
+            System.out.println("[Main Consumer("+Thread.currentThread().getId()+")]Exactly Once 실행되어야 하는 로직 id:" + myMessage.getId());
         } else {
-            System.out.println("duplicated!");
+            System.out.println("[Main Consumer("+Thread.currentThread().getId()+")]duplicated! id:" + myMessage.getId());
         }
     }
 }

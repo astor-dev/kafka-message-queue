@@ -18,7 +18,7 @@ public class MyProducer {
 
     public void sendMessage(MyMessage myMessage) throws JsonProcessingException {
         kafkaTemplate.send(Topic.MY_JSON_TOPIC,
-                String.valueOf(myMessage.getAge()),
+                String.valueOf(myMessage.getId()),
                 objectMapper.writeValueAsString(myMessage)
         );
     }

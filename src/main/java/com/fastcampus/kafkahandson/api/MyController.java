@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 public class MyController {
@@ -21,10 +23,12 @@ public class MyController {
 
     @PostMapping("/message")
     void message(
-        @RequestBody MyMessage message
+        @RequestBody List<MyMessage> messages
     ) {
         try {
-            myProducer.sendMessage(message);
+            for (MyMessage message : messages) {
+                myProducer.sendMessage(message);
+            }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
