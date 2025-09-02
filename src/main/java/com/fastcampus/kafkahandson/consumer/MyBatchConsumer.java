@@ -21,7 +21,8 @@ public class MyBatchConsumer {
     )
     public void accept(List<ConsumerRecord<String, String>> messages) {
         ObjectMapper objectMapper = new ObjectMapper();
-        System.out.println("batch messages arrived! - " + messages.size());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("batch messages arrived! - ").append(messages.size()).append("\n");
         for (ConsumerRecord<String, String> message : messages) {
             MyMessage myMessage;
             try {
@@ -29,7 +30,8 @@ public class MyBatchConsumer {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("ㄴ [Batch Consumer] Value " + myMessage + " / Offset " + message.offset());
+            stringBuilder.append("ㄴ [Batch Consumer] Value ").append(myMessage).append("/ Offset ").append(message.offset());
         }
+        System.out.println(stringBuilder);
     }
 }
