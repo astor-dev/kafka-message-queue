@@ -55,7 +55,7 @@ Kafka, Spring Boot, Java 17, Spring Data JPA, Mysql, Gradle, Docker, Docker Comp
 
 ### 이해를 돕기 위한 그림
 
-![partition](md_resource/partition.png)
+![partition](https://github.com/HyunSangHan/fastcampus-kafka-message-queue/blob/release/md_resource/partition.png?raw=true)
 
 ---
 
