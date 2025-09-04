@@ -30,7 +30,4 @@ public class MyEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-
-
 }
