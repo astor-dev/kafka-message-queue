@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
+@Deprecated
 public class MyCdcApplicationEvent extends ApplicationEvent {
 
     private final Integer id;
