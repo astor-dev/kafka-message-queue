@@ -1,5 +1,6 @@
 package com.fastcampus.kafkahandson.consumer;
 
+import com.fastcampus.kafkahandson.common.CustomObjectMapper;
 import com.fastcampus.kafkahandson.model.MyCdcMessage;
 import com.fastcampus.kafkahandson.model.MyMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,7 +19,7 @@ import static com.fastcampus.kafkahandson.model.Topic.MY_JSON_TOPIC;
 @Component
 public class MyCdcConsumer {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new CustomObjectMapper();
     private final Map<String, Integer> idHistoryMap = new ConcurrentHashMap<>(); // id에 대해 Exactly Once를 보장하기 위함
 
     @KafkaListener(

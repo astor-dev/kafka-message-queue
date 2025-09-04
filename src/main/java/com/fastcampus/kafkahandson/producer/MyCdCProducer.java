@@ -1,5 +1,6 @@
 package com.fastcampus.kafkahandson.producer;
 
+import com.fastcampus.kafkahandson.common.CustomObjectMapper;
 import com.fastcampus.kafkahandson.model.MyCdcMessage;
 import com.fastcampus.kafkahandson.model.MyMessage;
 import com.fastcampus.kafkahandson.model.Topic;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyCdCProducer {
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper = new CustomObjectMapper();
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
