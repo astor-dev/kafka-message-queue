@@ -32,8 +32,8 @@ public class MyController {
         return myService.findById(id);
     }
 
-    @PostMapping("/greeting")
-    ResponseEntity<MyModel> create(@RequestBody @Valid Request request, @PathVariable Integer id) {
+    @PutMapping("/greeting/{id}")
+    ResponseEntity<MyModel> update(@RequestBody @Valid Request request, @PathVariable Integer id) {
         MyModel myModel = myService.findById(id);
         if(myModel == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         myModel.setContent(request.getContent());
@@ -44,8 +44,8 @@ public class MyController {
     }
 
 
-    @PutMapping("/greeting/{:id}")
-    MyModel update(@RequestBody @Valid Request request) {
+    @PostMapping("/greeting")
+    MyModel create(@RequestBody @Valid Request request) {
         MyModel myModel = MyModel.create(
                 request.userId,
                 request.userAge,
