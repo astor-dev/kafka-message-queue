@@ -2,6 +2,7 @@ package com.fastcampus.kafkahandson.service;
 
 import com.fastcampus.kafkahandson.data.MyEntity;
 import com.fastcampus.kafkahandson.data.MyJpaRepository;
+import com.fastcampus.kafkahandson.event.MyCdcApplicationEvent;
 import com.fastcampus.kafkahandson.model.MyModel;
 import com.fastcampus.kafkahandson.model.MyModelConverter;
 import com.fastcampus.kafkahandson.model.OperationType;
@@ -9,6 +10,7 @@ import com.fastcampus.kafkahandson.producer.MyCdCProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class MyServiceImpl implements MyService {
     private final MyJpaRepository myJpaRepository;
     private final MyCdCProducer myCdCProducer;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public List<MyModel> findAll() {
@@ -37,17 +40,15 @@ public class MyServiceImpl implements MyService {
     public MyModel save(MyModel myModel) {
         MyEntity entity = myJpaRepository.save(MyModelConverter.toEntity(myModel));
         MyModel model = MyModelConverter.toModel(entity);
-        try {
-            myCdCProducer.sendMessage(
-                    MyModelConverter.toMessage(
-                            entity.getId(),
-                            model,
-                            model.getId() == null ? OperationType.CREATE : OperationType.UPDATE
-                    )
-            );
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        OperationType operationType = myModel.getId() == null ? OperationType.CREATE : OperationType.UPDATE;
+        applicationEventPublisher.publishEvent(
+                new MyCdcApplicationEvent(
+                        this,
+                        entity.getId(),
+                        model,
+                        operationType
+                )
+        );
         return model;
 
     }
@@ -56,16 +57,13 @@ public class MyServiceImpl implements MyService {
     @Transactional
     public void delete(Integer id) {
         myJpaRepository.deleteById(id);
-        try {
-            myCdCProducer.sendMessage(
-                    MyModelConverter.toMessage(
-                            id,
-                            null,
-                            OperationType.DELETE
-                    )
-            );
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        applicationEventPublisher.publishEvent(
+                new MyCdcApplicationEvent(
+                        this,
+                        id,
+                        null,
+                        OperationType.DELETE
+                )
+        );
     }
 }
