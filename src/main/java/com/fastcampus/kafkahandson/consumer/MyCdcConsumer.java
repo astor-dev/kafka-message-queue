@@ -25,7 +25,7 @@ public class MyCdcConsumer {
     @KafkaListener(
         topics = { MY_CDC_TOPIC },
         groupId = "cdc-consumer-group",
-        concurrency = "1"
+        concurrency = "3"
     )
     public void listen(ConsumerRecord<String, String> message, Acknowledgment acknowledgment) throws JsonProcessingException {
         MyCdcMessage myMessage = objectMapper.readValue(message.value(), MyCdcMessage.class);
