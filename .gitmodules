@@ -2,3 +2,8 @@
 	path = spring-kafka
 	url = git@github.com:astor-dev/kafka-message-queue.git
 	branch = spring-kafka
+
+[submodule "application-cdc"]
+	path = application-cdc
+	url = git@github.com:astor-dev/kafka-message-queue.git
+	branch = application-cdc
