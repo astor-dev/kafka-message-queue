@@ -8,12 +8,15 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 import static com.fastcampus.kafkahandson.model.Topic.MY_CDC_TOPIC;
 
 @Component
 public class MyCdcConsumer {
 
     private final CustomObjectMapper objectMapper = new CustomObjectMapper();
+    private volatile int retryCount = 0;
 
     @KafkaListener(
         topics = { MY_CDC_TOPIC },
@@ -21,8 +24,11 @@ public class MyCdcConsumer {
         concurrency = "3"
     )
     public void listen(ConsumerRecord<String, String> message, Acknowledgment acknowledgment) throws JsonProcessingException {
+        String retryMessage = retryCount >0 ? "(retry: " + retryCount  + ")": "";
         MyCdcMessage myCdcMessage = objectMapper.readValue(message.value(), MyCdcMessage.class);
-        System.out.println("[Cdc Consumer] " + myCdcMessage.getOperationType() + " Message arrived! (id: " + myCdcMessage.getId() + ") - " + myCdcMessage.getPayload());
-        acknowledgment.acknowledge();
+        System.out.println(retryMessage + "[Cdc Consumer] " + myCdcMessage.getOperationType() + " Message arrived (id: " + myCdcMessage.getId() + ") - " + myCdcMessage.getPayload() + " / time" + LocalDateTime.now());
+        retryCount++;
+        throw new RuntimeException("sth happened!");
+//        acknowledgment.acknowledge();
     }
 }
