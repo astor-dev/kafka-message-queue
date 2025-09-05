@@ -1,6 +1,8 @@
 package com.fastcampus.kafkahandson.config;
 
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -11,14 +13,15 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.listener.*;
 import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.ExponentialBackOff;
-import org.springframework.util.backoff.FixedBackOff;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Configuration
 @EnableKafka
@@ -46,12 +49,13 @@ public class KafkaConfig {
     @Bean
     @Primary
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
-        ConsumerFactory<String, Object> consumerFactory
+        ConsumerFactory<String, Object> consumerFactory,
+        CommonErrorHandler errorHandler
     ) {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(generateBackOff());
-        errorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
+//        DefaultErrorHandler errorHandler = new ContainerStoppedEvent(generateBackOff());
+//        errorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
         factory.setCommonErrorHandler(errorHandler);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         return factory;
@@ -97,6 +101,32 @@ public class KafkaConfig {
     @Primary
     public KafkaTemplate<String, ?> kafkaTemplate(KafkaProperties kafkaProperties) {
         return new KafkaTemplate<>(producerFactory(kafkaProperties));
+    }
+
+    @Bean
+    @Primary
+    CommonErrorHandler errorHandler() {
+        CommonContainerStoppingErrorHandler containerStoppingErrorHandler = new CommonContainerStoppingErrorHandler();
+        AtomicReference<Consumer<?,?>> consumer2 = new AtomicReference<>();
+        AtomicReference<MessageListenerContainer> container2 = new AtomicReference<>();
+        DefaultErrorHandler defaultErrorHandler =  new DefaultErrorHandler((rec, ex) -> {
+            // container stopping error handler를 통해서 해당 컨테이너(컨슈머)를 중지 시킴
+            containerStoppingErrorHandler.handleRemaining(ex, Collections.singletonList(rec), consumer2.get(), container2.get() );
+        }, generateBackOff()) {
+            @Override
+            public void handleRemaining(
+                    Exception thrownException,
+                    List<ConsumerRecord<?,?>> records,
+                    Consumer<?, ?> consumer,
+                    MessageListenerContainer container
+            ) {
+                consumer2.set(consumer);
+                container2.set(container);
+                super.handleRemaining(thrownException, records, consumer, container);
+            }
+        };
+        defaultErrorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
+        return defaultErrorHandler;
     }
 
 
