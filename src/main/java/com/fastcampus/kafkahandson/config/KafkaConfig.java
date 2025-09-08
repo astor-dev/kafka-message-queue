@@ -50,13 +50,13 @@ public class KafkaConfig {
     @Primary
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
         ConsumerFactory<String, Object> consumerFactory,
-        CommonErrorHandler errorHandler
+        KafkaTemplate<String, Object> kafkaTemplate
+//        CommonErrorHandler errorHandler
     ) {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
-//        DefaultErrorHandler errorHandler = new ContainerStoppedEvent(generateBackOff());
-//        errorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
-        factory.setCommonErrorHandler(errorHandler);
+//        factory.setCommonErrorHandler(errorHandler); NOTE: 데드레터큐 적용을 위해 비활성화
+        factory.setCommonErrorHandler(new DefaultErrorHandler(new DeadLetterPublishingRecoverer(kafkaTemplate), generateBackOff()));
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         return factory;
     }
@@ -103,6 +103,9 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory(kafkaProperties));
     }
 
+
+    // 스프링 카프카 컨트리뷰터가 제안한 코드
+    // 다만 효과적인 지는 잘 모르겠음 default extends 한 클래스에서 container stopping DI 받는게 더 나을 것 같은데
     @Bean
     @Primary
     CommonErrorHandler errorHandler() {
