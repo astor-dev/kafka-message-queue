@@ -7,3 +7,7 @@
 	path = application-cdc
 	url = git@github.com:astor-dev/kafka-message-queue.git
 	branch = application-cdc
+[submodule "exception-handling"]
+	path = exception-handling
+	url = git@github.com:astor-dev/kafka-message-queue.git
+	branch = exception-handling
